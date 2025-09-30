@@ -16,6 +16,7 @@
     "isolatedModules": true
   },
   "include": ["index.ts"],
+  "include": ["src/**/*.ts", "index.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

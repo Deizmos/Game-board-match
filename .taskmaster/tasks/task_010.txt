@@ -1,0 +1,25 @@
+# Task ID: 10
+# Title: Система рейтингов и отзывов
+# Status: pending
+# Dependencies: 5
+# Priority: low
+# Description: Добавить возможность оценивать игроков после встреч
+# Details:
+Создать систему рейтингов для игроков, возможность оставлять отзывы после игровых встреч. Включить средний рейтинг и историю оценок.
+
+# Test Strategy:
+Тестирование создания и получения рейтингов
+
+# Subtasks:
+## 1. Создать таблицу ratings [pending]
+### Dependencies: None
+### Description: Схема для хранения оценок игроков
+### Details:
+
+
+## 2. API для рейтингов [pending]
+### Dependencies: None
+### Description: POST /users/{id}/rating для оценки игрока
+### Details:
+
+

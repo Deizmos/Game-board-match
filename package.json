@@ -5,11 +5,14 @@
   "type": "module",
   "description": "Backend foundation for Game Board Match (Node.js + TypeScript)",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
-    "dev": "tsx watch index.ts",
-    "start": "node dist/index.js",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/src/server.js",
+    "prestart": "npm run build",
+    "start:dev": "tsx src/server.ts",
+    "rebuild:native": "npm rebuild better-sqlite3",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit"
   },
@@ -22,9 +25,13 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "11.10.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.4.1",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "7.6.13",

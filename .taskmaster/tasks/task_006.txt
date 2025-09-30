@@ -1,0 +1,31 @@
+# Task ID: 6
+# Title: Базовая система чатов
+# Status: pending
+# Dependencies: 5
+# Priority: medium
+# Description: Реализовать простую систему обмена сообщениями между игроками
+# Details:
+Создать систему для обмена сообщениями между участниками матча. Включить отправку текстовых сообщений, статусы прочтения, историю сообщений.
+
+# Test Strategy:
+Тестирование отправки и получения сообщений, проверка корректности связей
+
+# Subtasks:
+## 1. Создать таблицу messages [pending]
+### Dependencies: None
+### Description: Схема для хранения сообщений чата
+### Details:
+
+
+## 2. API для отправки сообщений [pending]
+### Dependencies: None
+### Description: POST /matches/{id}/messages для отправки сообщений
+### Details:
+
+
+## 3. API для получения истории сообщений [pending]
+### Dependencies: None
+### Description: GET /matches/{id}/messages для получения истории
+### Details:
+
+
