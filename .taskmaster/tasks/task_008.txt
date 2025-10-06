@@ -1,0 +1,25 @@
+# Task ID: 8
+# Title: Система уведомлений
+# Status: pending
+# Dependencies: 5, 6
+# Priority: low
+# Description: Реализовать уведомления о новых матчах и сообщениях
+# Details:
+Создать систему уведомлений для информирования пользователей о новых предложениях матчей, сообщениях, изменениях в встречах.
+
+# Test Strategy:
+Тестирование создания и получения уведомлений
+
+# Subtasks:
+## 1. Создать таблицу notifications [pending]
+### Dependencies: None
+### Description: Схема для хранения уведомлений
+### Details:
+
+
+## 2. API для уведомлений [pending]
+### Dependencies: None
+### Description: GET /notifications для получения уведомлений пользователя
+### Details:
+
+

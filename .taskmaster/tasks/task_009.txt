@@ -1,0 +1,25 @@
+# Task ID: 9
+# Title: Улучшение системы авторизации
+# Status: pending
+# Dependencies: None
+# Priority: low
+# Description: Расширить существующую систему авторизации
+# Details:
+Добавить дополнительные поля профиля, аватар пользователя, настройки приватности, восстановление пароля.
+
+# Test Strategy:
+Тестирование обновления профиля, проверка валидации данных
+
+# Subtasks:
+## 1. Добавить поля профиля [pending]
+### Dependencies: None
+### Description: Аватар, описание, настройки приватности
+### Details:
+
+
+## 2. API для обновления профиля [pending]
+### Dependencies: None
+### Description: PUT /auth/profile для обновления данных профиля
+### Details:
+
+

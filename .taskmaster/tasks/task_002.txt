@@ -1,0 +1,31 @@
+# Task ID: 2
+# Title: Создание каталога настольных игр
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Разработать систему управления каталогом настольных игр
+# Details:
+Создать модель данных для игр, включая название, описание, категории, сложность, количество игроков, время игры. Добавить CRUD операции для управления играми.
+
+# Test Strategy:
+Тестирование всех CRUD операций, проверка связей между играми и категориями
+
+# Subtasks:
+## 1. Создать таблицу games в базе данных [pending]
+### Dependencies: None
+### Description: Схема для хранения информации о настольных играх
+### Details:
+
+
+## 2. Реализовать CRUD API для игр [pending]
+### Dependencies: None
+### Description: GET, POST, PUT, DELETE эндпоинты для /games
+### Details:
+
+
+## 3. Добавить систему категорий игр [pending]
+### Dependencies: None
+### Description: Создать таблицу категорий и связи с играми
+### Details:
+
+
