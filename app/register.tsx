@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Button, Input, YStack, Text, XStack } from 'tamagui';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
-import { useLocationStore } from '@/store/locationStore';
 
 export default function RegisterScreen() {
   const [formData, setFormData] = useState({
@@ -15,7 +14,6 @@ export default function RegisterScreen() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuthStore();
-  const { getCurrentLocation, currentLocation } = useLocationStore();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -47,18 +45,19 @@ export default function RegisterScreen() {
 
     setIsLoading(true);
     try {
-      // Получаем геолокацию
-      await getCurrentLocation();
-
+      console.log('Начинаем регистрацию пользователя:', { email, name, age: ageNum });
+      
       await signUp(email, password, {
         name,
         age: ageNum,
-        location: currentLocation || { latitude: 0, longitude: 0 },
+        location: { latitude: 0, longitude: 0 },
       });
 
-      router.replace('/(auth)/onboarding');
+      console.log('Регистрация успешна');
+      Alert.alert('Успех', 'Аккаунт успешно создан!');
     } catch (error) {
-      Alert.alert('Ошибка регистрации', 'Не удалось создать аккаунт');
+      console.error('Ошибка регистрации:', error);
+      Alert.alert('Ошибка регистрации', `Не удалось создать аккаунт: ${error.message || error}`);
     } finally {
       setIsLoading(false);
     }
@@ -123,11 +122,19 @@ export default function RegisterScreen() {
           {isLoading ? 'Создание...' : 'Создать аккаунт'}
         </Button>
 
-        <XStack justifyContent="center" space="$2">
+        <XStack justifyContent="center" space="$2" marginTop="$4">
           <Text color="$gray10">Уже есть аккаунт?</Text>
-          <Link href="/(auth)/login" asChild>
+          <Link href="/login" asChild>
             <Button variant="outlined" size="$3">
               Войти
+            </Button>
+          </Link>
+        </XStack>
+
+        <XStack justifyContent="center" marginTop="$4">
+          <Link href="/" asChild>
+            <Button variant="ghost" size="$3">
+              ← Назад
             </Button>
           </Link>
         </XStack>

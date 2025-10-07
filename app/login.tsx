@@ -19,7 +19,7 @@ export default function LoginScreen() {
     setIsLoading(true);
     try {
       await signIn(email, password);
-      router.replace('/(tabs)');
+      Alert.alert('Успех', 'Вы успешно вошли в систему!');
     } catch (error) {
       Alert.alert('Ошибка входа', 'Неверный email или пароль');
     } finally {
@@ -32,10 +32,10 @@ export default function LoginScreen() {
       <YStack space="$4" padding="$6" flex={1} justifyContent="center">
         <YStack space="$2" alignItems="center" marginBottom="$6">
           <Text fontSize="$8" fontWeight="bold" color="$blue10">
-            GameBoardMatch
+            Вход
           </Text>
           <Text fontSize="$4" color="$gray10" textAlign="center">
-            Найди партнеров для настольных игр
+            Войдите в свой аккаунт
           </Text>
         </YStack>
 
@@ -69,9 +69,17 @@ export default function LoginScreen() {
 
         <XStack justifyContent="center" space="$2">
           <Text color="$gray10">Нет аккаунта?</Text>
-          <Link href="/(auth)/register" asChild>
+          <Link href="/register" asChild>
             <Button variant="outlined" size="$3">
               Регистрация
+            </Button>
+          </Link>
+        </XStack>
+
+        <XStack justifyContent="center" marginTop="$4">
+          <Link href="/" asChild>
+            <Button variant="ghost" size="$3">
+              ← Назад
             </Button>
           </Link>
         </XStack>

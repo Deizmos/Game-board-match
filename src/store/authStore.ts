@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { User } from '@/types';
-import { supabase } from '@/services/supabase';
+import { FirebaseAuthService } from '@/services/firebaseAuthService';
 
 interface AuthState {
   user: User | null;
@@ -8,12 +8,9 @@ interface AuthState {
   isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, userData: Partial<User>) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => Promise<void>;
-  refreshUser: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: false,
   isAuthenticated: false,
@@ -21,25 +18,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signIn: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { user, profile, error } = await FirebaseAuthService.signIn(email, password);
 
       if (error) throw error;
 
-      if (data.user) {
-        // Получаем данные пользователя из таблицы users
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-
-        if (userError) throw userError;
-
+      if (user && profile) {
         set({
-          user: userData as User,
+          user: profile as User,
           isAuthenticated: true,
           isLoading: false,
         });
@@ -52,130 +37,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   signUp: async (email: string, password: string, userData: Partial<User>) => {
+    console.log('AuthStore: Начинаем регистрацию');
     set({ isLoading: true });
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { user, profile, error } = await FirebaseAuthService.signUp(
         email,
         password,
-      });
+        {
+          name: userData.name || '',
+          age: userData.age || 18,
+          bio: userData.bio,
+          location: userData.location || {
+            latitude: 0,
+            longitude: 0,
+          },
+        }
+      );
+
+      console.log('AuthStore: Результат регистрации:', { user, profile, error });
 
       if (error) throw error;
 
-      if (data.user) {
-        // Создаем запись пользователя в таблице users
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: data.user.id,
-            email,
-            name: userData.name || '',
-            age: userData.age || 18,
-            bio: userData.bio || null,
-            avatar: userData.avatar || null,
-            location: userData.location || {
-              latitude: 0,
-              longitude: 0,
-            },
-            is_online: true,
-            last_seen: new Date().toISOString(),
-          });
-
-        if (insertError) throw insertError;
-
+      if (user && profile) {
+        console.log('AuthStore: Устанавливаем пользователя в store');
         set({
-          user: {
-            id: data.user.id,
-            email,
-            name: userData.name || '',
-            age: userData.age || 18,
-            bio: userData.bio,
-            avatar: userData.avatar,
-            location: userData.location || {
-              latitude: 0,
-              longitude: 0,
-            },
-            gamePreferences: [],
-            isOnline: true,
-            lastSeen: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
+          user: profile as User,
           isAuthenticated: true,
           isLoading: false,
         });
       }
     } catch (error) {
-      console.error('Ошибка регистрации:', error);
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-
-  signOut: async () => {
-    set({ isLoading: true });
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
-      set({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error('Ошибка выхода:', error);
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-
-  updateProfile: async (updates: Partial<User>) => {
-    const { user } = get();
-    if (!user) return;
-
-    set({ isLoading: true });
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      set({
-        user: { ...user, ...updates },
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error('Ошибка обновления профиля:', error);
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-
-  refreshUser: async () => {
-    const { user } = get();
-    if (!user) return;
-
-    set({ isLoading: true });
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-
-      set({
-        user: data as User,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error('Ошибка обновления пользователя:', error);
+      console.error('AuthStore: Ошибка регистрации:', error);
       set({ isLoading: false });
       throw error;
     }
