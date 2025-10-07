@@ -127,19 +127,72 @@ export class FirebaseAuthService {
    * Вход в систему
    */
   static async signIn(email: string, password: string): Promise<AuthResult> {
+    if (this.isDemoMode()) {
+      // Демо-режим: возвращаем моковые данные
+      const mockUser = {
+        uid: 'demo-user-id',
+        email: email,
+        emailVerified: false,
+      } as any;
+      
+      const mockProfile = {
+        id: 'demo-user-id',
+        email: email,
+        name: 'Демо Пользователь',
+        age: 25,
+        bio: 'Демо профиль для тестирования',
+        location: {
+          latitude: 55.7558,
+          longitude: 37.6176,
+          city: 'Москва',
+          country: 'Россия',
+        },
+        isOnline: true,
+        lastSeen: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as UserProfile;
+
+      return { user: mockUser, profile: mockProfile, error: null };
+    }
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Обновление статуса онлайн
-      await updateDoc(doc(db, 'users', user.uid), {
-        isOnline: true,
-        lastSeen: new Date(),
-        updatedAt: new Date(),
-      });
+      // Проверяем, существует ли документ пользователя
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        // Если документ не существует, создаем базовый профиль
+        const basicProfile = {
+          email: user.email!,
+          name: user.displayName || 'Пользователь',
+          age: 18,
+          bio: '',
+          location: {
+            latitude: 0,
+            longitude: 0,
+          },
+          isOnline: true,
+          lastSeen: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await setDoc(userDocRef, basicProfile);
+      } else {
+        // Если документ существует, обновляем только статус онлайн
+        await updateDoc(userDocRef, {
+          isOnline: true,
+          lastSeen: new Date(),
+          updatedAt: new Date(),
+        });
+      }
 
       // Получение профиля пользователя
-      const profileDoc = await getDoc(doc(db, 'users', user.uid));
+      const profileDoc = await getDoc(userDocRef);
       const profile = profileDoc.exists() ? { id: user.uid, ...profileDoc.data() } as UserProfile : null;
 
       return { user, profile, error: null };
@@ -152,16 +205,27 @@ export class FirebaseAuthService {
    * Выход из системы
    */
   static async signOut(): Promise<{ error: Error | null }> {
+    if (this.isDemoMode()) {
+      // В демо-режиме просто возвращаем успех
+      return { error: null };
+    }
+
     try {
       const user = auth.currentUser;
       
       if (user) {
-        // Обновление статуса офлайн
-        await updateDoc(doc(db, 'users', user.uid), {
-          isOnline: false,
-          lastSeen: new Date(),
-          updatedAt: new Date(),
-        });
+        // Проверяем, существует ли документ пользователя перед обновлением
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          // Обновление статуса офлайн только если документ существует
+          await updateDoc(userDocRef, {
+            isOnline: false,
+            lastSeen: new Date(),
+            updatedAt: new Date(),
+          });
+        }
       }
 
       await signOut(auth);

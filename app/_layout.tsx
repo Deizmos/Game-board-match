@@ -5,6 +5,8 @@ import { TamaguiProvider, createTamagui } from '@tamagui/core';
 import { config } from '@tamagui/config/v3';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { useAuthStore } from '@/store/authStore';
+import { router } from 'expo-router';
 
 // Предотвращаем автоматическое скрытие splash screen
 SplashScreen.preventAutoHideAsync();
@@ -18,13 +20,27 @@ export default function RootLayout() {
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   });
 
+  const { isAuthenticated, needsOnboarding, isLoading } = useAuthStore();
+
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    if (!isLoading && fontsLoaded) {
+      if (isAuthenticated && needsOnboarding) {
+        router.replace('/onboarding');
+      } else if (isAuthenticated && !needsOnboarding) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/');
+      }
+    }
+  }, [isAuthenticated, needsOnboarding, isLoading, fontsLoaded]);
+
+  if (!fontsLoaded || isLoading) {
     return null;
   }
 
@@ -34,6 +50,8 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="login" />
         <Stack.Screen name="register" />
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="(tabs)" />
       </Stack>
       <StatusBar style="auto" />
     </TamaguiProvider>

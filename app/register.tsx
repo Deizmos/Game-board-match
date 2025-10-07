@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Button, Input, YStack, Text, XStack } from 'tamagui';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 
 export default function RegisterScreen() {
@@ -54,7 +54,9 @@ export default function RegisterScreen() {
       });
 
       console.log('Регистрация успешна');
-      Alert.alert('Успех', 'Аккаунт успешно создан!');
+      Alert.alert('Успех', 'Аккаунт успешно создан! Теперь давайте настроим ваш профиль.', [
+        { text: 'OK', onPress: () => router.replace('/onboarding') }
+      ]);
     } catch (error) {
       console.error('Ошибка регистрации:', error);
       Alert.alert('Ошибка регистрации', `Не удалось создать аккаунт: ${error.message || error}`);
